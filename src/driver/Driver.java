@@ -14,7 +14,7 @@ public class Driver {
 
     public static void main(String[] args)
     {
-        HashedRBTs <Node> test1 = new HashedRBTs<Node>(52);
+        HashedRBTs <Node> test1 = new HashedRBTs<>(52);
 
         test1.fileReader("input4.txt");
 

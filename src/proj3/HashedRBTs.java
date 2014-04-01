@@ -17,11 +17,11 @@ public class HashedRBTs <E extends Comparable<? super E>>
 
     public HashedRBTs(int size)
     {
-        table = new ArrayList<RedBlackTree<Node>>(size);
+        table = new ArrayList<>(size);
 
         for(int i = 0; i < size; i++)
         {
-            RedBlackTree<Node> tree = new RedBlackTree<Node>();
+            RedBlackTree<Node> tree = new RedBlackTree<>();
             table.add(i, tree);
         }
     }
