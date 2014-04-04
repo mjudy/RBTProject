@@ -2,184 +2,266 @@ package proj3;
 
 /**
  * @author theghv
- * @version 1.0 Date: 4/1/14 Time: 1:52 AM
+ * @version 1.0 Date: 4/4/14 Time: 5:33 PM
  */
-public class RedBlackTree <E extends Comparable<? super E>>
+public class RedBlackTree<E extends Comparable<? super E>>
 {
-    private static final int BLACK = 1;
-    private static final int RED = 0;
-    
-    private RedBlackNode<E> root;
-    private RedBlackNode<E> nullNode;
-    
-    private RedBlackNode<E> current;
-    private RedBlackNode<E> parent;
-    private RedBlackNode<E> gParent;
-    private RedBlackNode<E> g2Parent;
-    
+    final int BLACK = 1;
+    final int RED = 0;
+    private RedBlackNode<E> nullNode = new RedBlackNode<>();
+    private RedBlackNode<E> root = null;
+
     public RedBlackTree()
     {
-        nullNode = new RedBlackNode<E>(null);
-        nullNode.left = nullNode.right = nullNode;
-        root = new RedBlackNode<E>(null);
-        root.left = root.right = nullNode;
+        root.left = null;
+        root.right = null;
+        root.parent = null;
     }
-    
-    private RedBlackNode<E> rotate (E element, RedBlackNode<E> parent)
+
+    public boolean isNull(RedBlackNode x)
     {
-        if (compare(element, parent) < 0)
-        {
-            return parent.left = compare(element, parent.left) < 0 ?
-                rotateWithLeftChild(parent.left) :
-                rotateWithRightChild(parent.left);        
-        }
-        else
-        {
-            return parent.right = compare(element, parent.right) < 0 ?
-                rotateWithLeftChild(parent.right) :
-                rotateWithRightChild(parent.right);
-        }
+        return x == null;
     }
-    
-    private int compare(E element, RedBlackNode<E> node)
-    {
-        if(node == root)
-        {
-            return 1;
-        }
-        else
-        {
-            return element.compareTo(node.element);
-        }
-    }
-    
-    private void handleReorient(E element)
-    {
-        current.color = RED;
-        current.left.color = BLACK;
-        current.right.color = BLACK;
-        
-        if (parent.color == RED)
-        {
-            gParent.color = RED;
-            if ((compare(element, gParent) < 0) != (compare(element, parent) < 0))
-            {
-                parent = rotate(element, gParent);                
-            }
-            current = rotate(element, gParent);
-            current.color = BLACK;
-        }
-        root.right.color = BLACK;
-    }
-    
+
     public void insert(E element)
     {
-        current = parent = gParent = root;
-        nullNode.element = element;
+        insert(new RedBlackNode<E>(element));
+    }
 
-        while (compare(element, current) != 0)
+    private void insert(RedBlackNode<E> z)
+    {
+        RedBlackNode<E> y = nullNode;
+        RedBlackNode<E> x = root;
+
+        while (!isNull(x))
         {
-            g2Parent = gParent;
-            gParent = parent;
-            parent = current;
-
-            current = compare(element, current) < 0  ? current.left : current.right;
-            if (current.left.color == RED && current.right.color == RED)
+            y = x;
+            if (z.element.compareTo(x.element) < 0)
             {
-                handleReorient(element);
+                x.numLeft++;
+                x = x.left;
+            }
+            else
+            {
+                x.numRight++;
+                x = x.right;
             }
         }
 
-        if (current != nullNode)
-        {
-            return;
-        }
-        current = new RedBlackNode<E>(element, nullNode, nullNode);
+        z.parent = y;
 
-        if(compare(element, parent) < 0)
+        if(isNull(y))
         {
-            parent.left = current;
+            root = z;
         }
-        else
+        else if(z.element.compareTo(y.element) < 0)
         {
-            parent.right = current;
-        }
-        handleReorient(element);
-    }
-
-    public boolean isEmpty()
-    {
-        return root.element == null;
-    }
-
-    public void printTree()
-    {
-        if(isEmpty())
-        {
-            System.out.println("Empty Tree");
+            y.left = z;
         }
         else
         {
-            printTree(root);
+            y.right = z;
         }
+
+        z.left = nullNode;
+        z.right = nullNode;
+        z.color = RED;
+
+        insertFix(z);
     }
 
-    private void printTree(RedBlackNode<E> node)
+    private void insertFix(RedBlackNode<E> z)
     {
-        if (node != nullNode)
+        RedBlackNode<E> y;
+
+        while(z.parent.color == RED)
         {
-            printTree(node.left);
-            System.out.println(node.element);
-            printTree(node.right);
+            if(z.parent == z.parent.parent.left)
+            {
+                y = z.parent.parent.right;
+
+                if (y.color == RED)
+                {
+                    z.parent.color = BLACK;
+                    y.color = BLACK;
+                    z.parent.parent.color = RED;
+                    z = z.parent.parent;
+                }
+                else if(z == z.parent.right)
+                {
+                    z = z.parent;
+                    rotateLeft(z);
+                }
+                else
+                {
+                    z.parent.color = BLACK;
+                    z.parent.parent.color = RED;
+                    rotateRight(z.parent.parent);
+                }
+            }
+            else
+            {
+                y = z.parent.parent.left;
+                if(y.color == RED)
+                {
+                    z.parent.color = BLACK;
+                    y.color = BLACK;
+                    z.parent.parent.color = RED;
+                    z = z.parent.parent;
+                }
+                else if(z == z.parent.left)
+                {
+                    z = z.parent;
+                    rotateRight(z);
+                }
+                else
+                {
+                    z.parent.color = BLACK;
+                    z.parent.parent.color = RED;
+                    rotateLeft(z.parent.parent);
+                }
+            }
         }
+
+        root.color = BLACK;
     }
 
-    private void printRoot()
+    private void rotateLeft(RedBlackNode<E> x)
     {
-        if (isEmpty())
+        rotateLeftFix(x);
+
+        RedBlackNode<E> y;
+        y = x.right;
+        x.right = y.left;
+
+        if (!isNull(y.left))
         {
-            System.out.println("Empty Tree");
+            y.left.parent = x;
+        }
+
+        y.parent = x.parent;
+
+        if (isNull(x.parent))
+        {
+            root = y;
+        }
+        else if(x.parent.left == x)
+        {
+            x.parent.left = y;
         }
         else
         {
-            System.out.println(root.element);
+            x.parent.right = y;
+        }
+
+        x.left = x;
+        x.parent = y;
+    }
+
+    private void rotateRight(RedBlackNode<E> y)
+    {
+        rotateRightFix(y);
+
+        RedBlackNode<E> x = y.left;
+        y.left = x.right;
+
+        if(!isNull(x.right))
+        {
+            x.right.parent = y;
+        }
+        x.parent = y.parent;
+
+        if(isNull(y.parent))
+        {
+            root = x;
+        }
+        else if(y.parent.right == y)
+        {
+            y.parent.right = x;
+        }
+        else
+        {
+            y.parent.left = x;
+        }
+
+        x.right = y;
+        y.parent = x;
+    }
+
+    private void rotateLeftFix(RedBlackNode x)
+    {
+        if (isNull(x.left) && isNull(x.right.left))
+        {
+            x.numLeft = 0;
+            x.numRight = 0;
+            x.right.numLeft = 1;
+        }
+        else if(isNull(x.left) && !isNull(x.right.left))
+        {
+            x.numLeft = 0;
+            x.numRight = 1 + x.right.left.numLeft + x.right.left.numRight;
+            x.right.numLeft = 2 + x.right.left.numLeft + x.right.left.numRight;
+        }
+        else if (!isNull(x.left) && isNull(x.right.left))
+        {
+            x.numRight = 0;
+            x.right.numLeft = 2 + x.left.numLeft + x.left.numRight;
+
+        }
+        else
+        {
+            x.numRight = 1 + x.right.left.numLeft + x.right.left.numRight;
+            x.right.numLeft = 3 + x.left.numLeft + x.left.numRight + x.right.left.numLeft + x.right.left.numRight;
         }
     }
 
-    private RedBlackNode<E> rotateWithLeftChild (RedBlackNode<E> n2)
+    private void rotateRightFix(RedBlackNode y)
     {
-        RedBlackNode<E> n1 = n2.left;
-        n2.left = n1.right;
-        n1.right = n2;
-        return n1;
+        if (isNull(y.right) && isNull(y.left.right)){
+            y.numRight = 0;
+            y.numLeft = 0;
+            y.left.numRight = 1;
+        }
+        else if (isNull(y.right) && !isNull(y.left.right)){
+            y.numRight = 0;
+            y.numLeft = 1 + y.left.right.numRight + y.left.right.numLeft;
+            y.left.numRight = 2 + y.left.right.numRight + y.left.right.numLeft;
+        }
+        else if (!isNull(y.right) && isNull(y.left.right)){
+            y.numLeft = 0;
+            y.left.numRight = 2 + y.right.numRight +y.right.numLeft;
+
+        }
+        else{
+            y.numLeft = 1 + y.left.right.numRight + y.left.right.numLeft;
+            y.left.numRight = 3 + y.right.numRight + y.right.numLeft + y.left.right.numRight + y.left.right.numLeft;
+        }
     }
 
-    private RedBlackNode<E> rotateWithRightChild (RedBlackNode<E> n2)
-    {
-        RedBlackNode<E> n1 = n2.right;
-        n2.right = n1.left;
-        n1.left = n2;
-        return n1;
-    }
-
-    private static class RedBlackNode<E>
+    private class RedBlackNode<E extends Comparable<? super E>>
     {
         E element;
+
+        RedBlackNode<E> parent;
         RedBlackNode<E> left;
         RedBlackNode<E> right;
-        int color;
-        
+
+        int numLeft = 0, numRight = 0, color;
+
+        RedBlackNode()
+        {
+            color = BLACK;
+            numLeft = 0;
+            numRight = 0;
+            parent = null;
+            left = null;
+            right = null;
+        }
+
         RedBlackNode(E element)
         {
-            this (element, null, null);
-        }
-        
-        RedBlackNode(E element, RedBlackNode<E> left, RedBlackNode<E> right)
-        {
+            this();
             this.element = element;
-            this.left = left;
-            this.right = right;
-            color = BLACK;
         }
     }
 }

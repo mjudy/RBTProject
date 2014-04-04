@@ -13,7 +13,7 @@ import java.util.Scanner;
  */
 public class HashedRBTs <E extends Comparable<? super E>>
 {
-    private ArrayList<RedBlackTree<Node>> table;
+    private ArrayList<RedBlackTree<Partial>> table;
 
     public HashedRBTs(int size)
     {
@@ -21,7 +21,7 @@ public class HashedRBTs <E extends Comparable<? super E>>
 
         for(int i = 0; i < size; i++)
         {
-            RedBlackTree<Node> tree = new RedBlackTree<>();
+            RedBlackTree<Partial> tree = new RedBlackTree<>();
             table.add(i, tree);
         }
     }
@@ -30,27 +30,30 @@ public class HashedRBTs <E extends Comparable<? super E>>
     {
         File file = new File(filename);
         String str;
-        int index;
+        int index, frequency;
 
         try
         {
             Scanner scan = new Scanner(file);
-            while (scan.hasNext())
+            while (scan.hasNextLine())
             {
-                str = scan.next();
-                str = str.replaceAll("[\\W]|[0-9]", "");
+                str = scan.nextLine();
+                str = str.replaceAll("Node|word=|frequency=|[\\W]", "");                
+                frequency = Integer.parseInt(str.replaceAll("[\\D]", ""));
+                str = str.replaceAll("[\\d]", "");
 
                 if (str.length() > 0)
                 {
+                    System.out.println(str + " " + frequency);
                     if(str.charAt(0) - 65 >= 0 && str.charAt(0) <= 25)
                     {
                         index = str.charAt(0) - 65;
-                        table.get(index).insert(new Node(str));
+                        table.get(index).insert(new Partial(new Node(str, frequency)));
                     }
                     if(str.charAt(0) - 97 >=0 && str.charAt(0) - 97 <= 25)
                     {
                         index = str.charAt(0) - 71;
-                        table.get(index).insert(new Node(str));
+                        table.get(index).insert(new Partial(new Node(str, frequency)));
                     }
                 }
             }
@@ -60,4 +63,16 @@ public class HashedRBTs <E extends Comparable<? super E>>
             e.printStackTrace();
         }
     }
+
+    public void printHashCountResults()
+    {
+
+    }
+
+    public RedBlackTree retrieveHashedRBTat(int index)
+    {
+        return new RedBlackTree();
+    }
+
+
 }

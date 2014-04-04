@@ -1,5 +1,7 @@
 package proj3;
 
+import java.util.Arrays;
+
 /**
  * @author theghv
  * @version 1.0
@@ -10,7 +12,7 @@ public class MaxHeap <E extends Comparable<? super E>>
 {
     private static int DEFAULT_CAPACITY = 100;
     private int currentSize;
-    private Comparable[] array;
+    private E[] array;
 
     public MaxHeap()
     {
@@ -20,23 +22,32 @@ public class MaxHeap <E extends Comparable<? super E>>
     public MaxHeap(int capacity)
     {
         currentSize = 0;
-        array = new Comparable[capacity + 1];
+        array = (E[]) new Comparable[capacity];
     }
 
-    public void insert(E x) throws Overflow
+    public void insert(E x)
     {
+        int index;
         if (isFull())
         {
-            throw new Overflow();
+            array = this.resize();
         }
 
-        int hole = ++currentSize;
-        for ( ; hole > 1 && x.compareTo(array[hole/2]) < 0; hole /= 2)
+        if(isEmpty())
         {
-            array[hole] = array [hole/2];
+            index = currentSize;
+            array[index] = x;
         }
-
-        array[hole] = x;
+        else
+        {
+            currentSize++;
+            index = currentSize;
+            for (; index > 0 && x.compareTo(array[index/2]) > 0; index /= 2)
+            {
+                array[index] = array[index/2];
+            }
+            array[index] = x;
+        }
     }
 
     public Comparable findMax()
@@ -45,12 +56,12 @@ public class MaxHeap <E extends Comparable<? super E>>
         {
             return null;
         }
-        return array[1];
+        return array[0];
     }
 
     public boolean isEmpty()
     {
-        return currentSize == array.length -1;
+        return array[0] == null;
     }
 
     public boolean isFull()
@@ -66,26 +77,39 @@ public class MaxHeap <E extends Comparable<? super E>>
         }
     }
 
-    private void percolateDown(int hole)
+    public void printImmediateOptions()
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            System.out.println(array[i]);
+        }
+    }
+
+    private void percolateDown(int index)
     {
         int child;
-        Comparable temp = array[hole];
-        for ( ; hole * 2 <= currentSize; hole = child)
+        E temp = array[index];
+        for ( ; index * 2 <= currentSize; index = child)
         {
-            child = hole * 2;
+            child = index * 2;
             if (child != currentSize && array[child+1].compareTo(array[child]) < 0)
             {
                 child++;
             }
             if (array[child].compareTo(temp) < 0)
             {
-                array[hole] = array [child];
+                array[index] = array [child];
             }
             else
             {
                 break;
             }
         }
-        array[hole] = temp;
+        array[index] = temp;
+    }
+
+    private E[] resize()
+    {
+        return Arrays.copyOf(array, array.length * 2);
     }
 }
