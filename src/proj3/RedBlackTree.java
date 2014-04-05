@@ -9,7 +9,7 @@ public class RedBlackTree<E extends Comparable<? super E>>
     final int BLACK = 1;
     final int RED = 0;
     private RedBlackNode<E> nullNode = new RedBlackNode<>();
-    private RedBlackNode<E> root = null;
+    private RedBlackNode<E> root = nullNode;
 
     public RedBlackTree()
     {
@@ -18,107 +18,179 @@ public class RedBlackTree<E extends Comparable<? super E>>
         root.parent = null;
     }
 
-    public boolean isNull(RedBlackNode x)
+    public boolean isEmpty()
     {
-        return x == null;
+        return root == nullNode;
+    }
+
+    public boolean isNull(RedBlackNode n)
+    {
+        return n == nullNode;
+    }
+
+    public boolean contains(Partial x)
+    {
+        return contains(x, root);
+    }
+
+    private boolean contains(Partial x, RedBlackNode n)
+    {
+        if (n != nullNode)
+        {
+            contains(x, n.left);
+            if(x.compareTo(n.element) == 0)
+            {
+                return true;
+            }
+            contains(x, n.right);
+        }
+        return false;
+    }
+
+    public E getElement(Partial x)
+    {
+        return getElement(x, root);
+    }
+
+    private E getElement(Partial x, RedBlackNode n)
+    {
+        System.out.println(n.element);
+        if(n != nullNode)
+        {
+            getElement(x, n.left);
+            if (x.compareTo(n.element) == 0)
+            {
+//                System.out.println(n.element);
+                return (E)n.element;
+            }
+            getElement(x, n.right);
+        }
+        return null;
+    }
+
+    public void printRoot()
+    {
+        if(!isEmpty())
+        {
+            System.out.println(root.element.toString());
+        }
+        else
+        {
+            System.out.println("Empty Tree");
+        }
+    }
+
+    public void printTree()
+    {
+        printTree(root);
+    }
+
+    private void printTree(RedBlackNode x)
+    {
+        if(x != nullNode)
+        {
+            printTree(x.left);
+            System.out.println(x.element);
+            printTree(x.right);
+        }
     }
 
     public void insert(E element)
     {
-        insert(new RedBlackNode<E>(element));
+        insert(new RedBlackNode<>(element));
     }
 
-    private void insert(RedBlackNode<E> z)
+    private void insert(RedBlackNode<E> node)
     {
-        RedBlackNode<E> y = nullNode;
-        RedBlackNode<E> x = root;
+        RedBlackNode<E> previous = nullNode;
+        RedBlackNode<E> current = root;
 
-        while (!isNull(x))
+        while (!isNull(current))
         {
-            y = x;
-            if (z.element.compareTo(x.element) < 0)
+            previous = current;
+            if (node.element.compareTo(current.element) < 0)
             {
-                x.numLeft++;
-                x = x.left;
+                current.numLeft++;
+                current = current.left;
             }
             else
             {
-                x.numRight++;
-                x = x.right;
+                current.numRight++;
+                current = current.right;
             }
         }
 
-        z.parent = y;
+        node.parent = previous;
 
-        if(isNull(y))
+        if(isNull(previous))
         {
-            root = z;
+            root = node;
         }
-        else if(z.element.compareTo(y.element) < 0)
+        else if(node.element.compareTo(previous.element) < 0)
         {
-            y.left = z;
+            previous.left = node;
         }
         else
         {
-            y.right = z;
+            previous.right = node;
         }
 
-        z.left = nullNode;
-        z.right = nullNode;
-        z.color = RED;
+        node.left = nullNode;
+        node.right = nullNode;
+        node.color = RED;
 
-        insertFix(z);
+        insertFix(node);
     }
 
-    private void insertFix(RedBlackNode<E> z)
+    private void insertFix(RedBlackNode<E> node)
     {
         RedBlackNode<E> y;
 
-        while(z.parent.color == RED)
+        while(node.parent.color == RED)
         {
-            if(z.parent == z.parent.parent.left)
+            if(node.parent == node.parent.parent.left)
             {
-                y = z.parent.parent.right;
+                y = node.parent.parent.right;
 
                 if (y.color == RED)
                 {
-                    z.parent.color = BLACK;
+                    node.parent.color = BLACK;
                     y.color = BLACK;
-                    z.parent.parent.color = RED;
-                    z = z.parent.parent;
+                    node.parent.parent.color = RED;
+                    node = node.parent.parent;
                 }
-                else if(z == z.parent.right)
+                else if(node == node.parent.right)
                 {
-                    z = z.parent;
-                    rotateLeft(z);
+                    node = node.parent;
+                    rotateLeft(node);
                 }
                 else
                 {
-                    z.parent.color = BLACK;
-                    z.parent.parent.color = RED;
-                    rotateRight(z.parent.parent);
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    rotateRight(node.parent.parent);
                 }
             }
             else
             {
-                y = z.parent.parent.left;
+                y = node.parent.parent.left;
                 if(y.color == RED)
                 {
-                    z.parent.color = BLACK;
+                    node.parent.color = BLACK;
                     y.color = BLACK;
-                    z.parent.parent.color = RED;
-                    z = z.parent.parent;
+                    node.parent.parent.color = RED;
+                    node = node.parent.parent;
                 }
-                else if(z == z.parent.left)
+                else if(node == node.parent.left)
                 {
-                    z = z.parent;
-                    rotateRight(z);
+                    node = node.parent;
+                    rotateRight(node);
                 }
                 else
                 {
-                    z.parent.color = BLACK;
-                    z.parent.parent.color = RED;
-                    rotateLeft(z.parent.parent);
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    rotateLeft(node.parent.parent);
                 }
             }
         }

@@ -44,16 +44,41 @@ public class HashedRBTs <E extends Comparable<? super E>>
 
                 if (str.length() > 0)
                 {
-                    System.out.println(str + " " + frequency);
-                    if(str.charAt(0) - 65 >= 0 && str.charAt(0) <= 25)
+                    Node newNode = new Node(str, frequency);
+                    System.out.println(newNode);
+                    if(str.charAt(0) - 65 >= 0 && str.charAt(0) - 65 <= 25)
                     {
                         index = str.charAt(0) - 65;
-                        table.get(index).insert(new Partial(new Node(str, frequency)));
+
+                        if(table.get(index).contains(new Partial(newNode)))
+                        {
+//                            System.out.println("A");
+                            table.get(index).getElement(new Partial(newNode)).insertNodeIntoHeap(newNode);
+                        }
+                        else if(table.get(index).isEmpty())
+                        {
+//                            System.out.println("B");
+                            table.get(index).insert(new Partial(newNode));
+                        }
+                        else
+                        {
+                            table.get(index).insert(new Partial(newNode));
+                        }
                     }
                     if(str.charAt(0) - 97 >=0 && str.charAt(0) - 97 <= 25)
                     {
                         index = str.charAt(0) - 71;
-                        table.get(index).insert(new Partial(new Node(str, frequency)));
+
+                        if(table.get(index).contains(new Partial(newNode)))
+                        {
+//                            System.out.println("C");
+                            table.get(index).getElement(new Partial(newNode)).insertNodeIntoHeap(newNode);
+                        }
+                        else if(table.get(index).isEmpty())
+                        {
+//                            System.out.println("D");
+                            table.get(index).insert(new Partial(newNode));
+                        }
                     }
                 }
             }
@@ -71,7 +96,7 @@ public class HashedRBTs <E extends Comparable<? super E>>
 
     public RedBlackTree retrieveHashedRBTat(int index)
     {
-        return new RedBlackTree();
+        return table.get(index);
     }
 
 

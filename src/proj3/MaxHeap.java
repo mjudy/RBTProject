@@ -27,6 +27,7 @@ public class MaxHeap <E extends Comparable<? super E>>
 
     public void insert(E x)
     {
+//        System.out.println("Sup");
         int index;
         if (isFull())
         {
@@ -111,5 +112,16 @@ public class MaxHeap <E extends Comparable<? super E>>
     private E[] resize()
     {
         return Arrays.copyOf(array, array.length * 2);
+    }
+
+    @Override
+    public String toString()
+    {
+        String str = "\n";
+        for (int i = 0; i < currentSize; i++)
+        {
+            str += "[" + (i + 1) + "]" + array[i].toString() + "\n";
+        }
+        return str;
     }
 }

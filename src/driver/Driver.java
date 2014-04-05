@@ -21,15 +21,15 @@ public class Driver {
         // Notice that printHashCountResults() only prints THE ROOT of the BST and it's heap.
         // There can be many other nodes in the BST itself
         // The code below this does a more detailed job for a specific letter
-//        test1.printHashCountResults();
+        test1.printHashCountResults();
 
         // retrieve all A's (index 0)
-//        RedBlackTreeN<Partial> sample = test1.retrieveHashedRBTat(0);
-//
-//        if(debug) { System.out.println("^^^ Printing A's Red-Black tree ROOT"); }
-//        sample.printRoot();
-//        if(debug) { System.out.println("&&& Printing A's Red-Black ENTIRE tree"); }
-//        sample.printTree();
+        RedBlackTree<Partial> sample = test1.retrieveHashedRBTat(0);
+
+        if(debug) { System.out.println("^^^ Printing A's Red-Black tree ROOT"); }
+        sample.printRoot();
+        if(debug) { System.out.println("&&& Printing A's Red-Black ENTIRE tree"); }
+        sample.printTree();
 
         // Want to see what Immediate options are for "Ar"
 //        Partial results = (Partial) sample.retrieveIfItContains(new Partial(new Node("Ar", -1)));
