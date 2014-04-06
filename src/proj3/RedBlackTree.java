@@ -12,8 +12,8 @@ public class RedBlackTree<E extends Comparable<? super E>>
     private RedBlackNode<E> root = new RedBlackNode<>(null);
     private RedBlackNode<E> current;
     private RedBlackNode<E> parent;
-    private RedBlackNode<E> grand;
-    private RedBlackNode<E> great;
+    private RedBlackNode<E> gParent;
+    private RedBlackNode<E> g2Parent;
 
     public RedBlackTree( E element )
     {
@@ -23,12 +23,12 @@ public class RedBlackTree<E extends Comparable<? super E>>
 
     public void insert( E item )
     {
-        current = parent = grand = root;
+        current = parent = gParent = root;
         nullNode.element = item;
 
         while(current.element != null && current.element.compareTo( item ) != 0 )
         {
-            great = grand; grand = parent; parent = current;
+            g2Parent = gParent; gParent = parent; parent = current;
             current = item.compareTo( current.element ) < 0 ? current.left : current.right;
 
             if(current.left != null && current.right != null)
@@ -57,10 +57,10 @@ public class RedBlackTree<E extends Comparable<? super E>>
 
         if( parent.color == RED )   // Have to rotate
         {
-            grand.color = RED;
-            if( ( item.compareTo( grand.element ) < 0 ) != ( item.compareTo( parent.element ) < 0 ) )
-                parent = rotate( item, grand );  // Start dbl rotate
-            current = rotate( item, great );
+            gParent.color = RED;
+            if( ( item.compareTo( gParent.element ) < 0 ) != ( item.compareTo( parent.element ) < 0 ) )
+                parent = rotate( item, gParent );  // Start dbl rotate
+            current = rotate( item, g2Parent );
             current.color = BLACK;
         }
         root.right.color = BLACK; // Make root black
@@ -185,11 +185,11 @@ public class RedBlackTree<E extends Comparable<? super E>>
             this( theElement, null, null );
         }
 
-        RedBlackNode( E theElement, RedBlackNode<E> lt, RedBlackNode<E> rt )
+        RedBlackNode( E element, RedBlackNode<E> left, RedBlackNode<E> right )
         {
-            element = theElement;
-            left = lt;
-            right = rt;
+            this.element = element;
+            this.left = left;
+            this.right = right;
             color = BLACK;
         }
 
