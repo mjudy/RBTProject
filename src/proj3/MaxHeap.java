@@ -38,16 +38,17 @@ public class MaxHeap <E extends Comparable<? super E>>
         {
             index = currentSize;
             array[index] = x;
+            currentSize++;
         }
         else
         {
-            currentSize++;
             index = currentSize;
             for (; index > 0 && x.compareTo(array[index/2]) > 0; index /= 2)
             {
                 array[index] = array[index/2];
             }
             array[index] = x;
+            currentSize++;
         }
     }
 

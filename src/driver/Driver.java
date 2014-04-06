@@ -16,7 +16,7 @@ public class Driver {
     {
         HashedRBTs <Node> test1 = new HashedRBTs<>(52);
 
-        test1.fileReader("input3.txt");
+        test1.fileReader("input1.txt");
 
         // Notice that printHashCountResults() only prints THE ROOT of the BST and it's heap.
         // There can be many other nodes in the BST itself

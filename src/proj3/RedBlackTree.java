@@ -94,6 +94,94 @@ public class RedBlackTree<E extends Comparable<? super E>>
         return k2;
     }
 
+    public boolean isEmpty()
+    {
+        return root.right == null;
+    }
+
+    public boolean contains(Partial x)
+    {
+        return root.right != nullNode && contains(x, root);
+    }
+
+    private boolean contains(Partial x, RedBlackNode n)
+    {
+        if (n != nullNode)
+        {
+            contains(x, n.left);
+            if(x.compareTo(n.element) == 0)
+            {
+                return true;
+            }
+            contains(x, n.right);
+        }
+        return false;
+    }
+
+    public E getElement(Partial x)
+    {
+        return getElement(x, root);
+    }
+
+    private E getElement(Partial x, RedBlackNode n)
+    {
+
+        nullNode.element = (E)x;
+        current = root.right;
+
+        for( ; ; )
+        {
+            if( x.compareTo( current.element ) < 0 )
+                current = current.left;
+            else if( x.compareTo( current.element ) > 0 )
+                current = current.right;
+            else if( current != nullNode )
+                return current.element;
+            else
+                return null;
+        }
+    }
+
+    public E getRoot()
+    {
+        if (isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return root.right.element;
+        }
+
+    }
+
+    public void printRoot()
+    {
+        if(!isEmpty())
+        {
+            System.out.println(root.right.element);
+        }
+        else
+        {
+            System.out.println("Empty Tree");
+        }
+    }
+
+    public void printTree()
+    {
+        printTree(root.right);
+    }
+
+    private void printTree(RedBlackNode x)
+    {
+        if(x != nullNode)
+        {
+            printTree(x.left);
+            System.out.println(x.getElement().toString());
+            printTree(x.right);
+        }
+    }
+
     private class RedBlackNode<E extends Comparable<? super E>>
     {
         E element;
@@ -118,89 +206,10 @@ public class RedBlackTree<E extends Comparable<? super E>>
             right = rt;
             color = BLACK;
         }
-    }
 
-    public boolean isEmpty()
-    {
-        return root.right == nullNode;
-    }
-
-    public boolean contains(Partial x)
-    {
-        return root != nullNode && contains(x, root);
-    }
-
-    private boolean contains(Partial x, RedBlackNode n)
-    {
-        if (n != nullNode)
+        E getElement()
         {
-            contains(x, n.left);
-            if(x.compareTo(n.element) == 0)
-            {
-                return true;
-            }
-            contains(x, n.right);
-        }
-        return false;
-    }
-
-    public E getElement(Partial x)
-    {
-        return getElement(x, root);
-    }
-
-    private E getElement(Partial x, RedBlackNode n)
-    {
-        System.out.println(n.element);
-        if(n != nullNode)
-        {
-            getElement(x, n.left);
-            if (x.compareTo(n.element) == 0)
-            {
-                return (E)n.element;
-            }
-            getElement(x, n.right);
-        }
-        return null;
-    }
-
-    public E getRoot()
-    {
-        if (!isEmpty())
-        {
-            return null;
-        }
-        else
-        {
-            return root.element;
-        }
-
-    }
-
-    public void printRoot()
-    {
-        if(!isEmpty())
-        {
-            System.out.println(root.element);
-        }
-        else
-        {
-            System.out.println("Empty Tree");
-        }
-    }
-
-    public void printTree()
-    {
-        printTree(root);
-    }
-
-    private void printTree(RedBlackNode x)
-    {
-        if(x != nullNode)
-        {
-            printTree(x.left);
-            System.out.println(x.element);
-            printTree(x.right);
+            return element;
         }
     }
 }
