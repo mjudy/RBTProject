@@ -60,7 +60,7 @@ public class HashedRBTs <E extends Comparable<? super E>>
                             table.get(index).insert(new Partial(newNode));
                         }
                     }
-                    if(str.charAt(0) - 97 >=0 && str.charAt(0) - 97 <= 25)
+                    else if(str.charAt(0) - 97 >=0 && str.charAt(0) - 97 <= 25)
                     {
                         index = str.charAt(0) - 71;
 
