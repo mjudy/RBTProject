@@ -16,7 +16,7 @@ public class Driver {
     {
         HashedRBTs <Node> test1 = new HashedRBTs<>(52);
 
-        test1.fileReader("input1.txt");
+        test1.fileReader("input4.txt");
 
         // Notice that printHashCountResults() only prints THE ROOT of the BST and it's heap.
         // There can be many other nodes in the BST itself
@@ -32,9 +32,9 @@ public class Driver {
         sample.printTree();
 
         // Want to see what Immediate options are for "Ar"
-//        Partial results = (Partial) sample.retrieveIfItContains(new Partial(new Node("Ar", -1)));
+        Partial results = (Partial) sample.retrieveIfItContains(new Partial(new Node("Ar", -1)));
         // the frequency does not matter in the line (-1) above
-//        printImmediateResults(results);
+        printImmediateResults(results);
 
     }
 

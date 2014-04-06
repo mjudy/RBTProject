@@ -99,31 +99,17 @@ public class RedBlackTree<E extends Comparable<? super E>>
         return root.right == null;
     }
 
-    public boolean contains(Partial x)
+    public E contains(Partial x)
     {
-        return root.right != nullNode && contains(x, root);
+        return getElement(x);
     }
 
-    private boolean contains(Partial x, RedBlackNode n)
+    public E retrieveIfItContains(Partial x)
     {
-        if (n != nullNode)
-        {
-            contains(x, n.left);
-            if(x.compareTo(n.element) == 0)
-            {
-                return true;
-            }
-            contains(x, n.right);
-        }
-        return false;
+        return getElement(x);
     }
 
-    public E getElement(Partial x)
-    {
-        return getElement(x, root);
-    }
-
-    private E getElement(Partial x, RedBlackNode n)
+    private E getElement(Partial x)
     {
 
         nullNode.element = (E)x;

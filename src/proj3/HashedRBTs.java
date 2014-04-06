@@ -51,9 +51,9 @@ public class HashedRBTs <E extends Comparable<? super E>>
                     {
                         index = str.charAt(0) - 65;
 
-                        if(table.get(index).getElement(new Partial(newNode)) != null)
+                        if(table.get(index).contains(new Partial(newNode)) != null)
                         {
-                            table.get(index).getElement(new Partial(newNode)).insertNodeIntoHeap(newNode);
+                            table.get(index).contains(new Partial(newNode)).insertNodeIntoHeap(newNode);
                         }
                         else
                         {
@@ -64,9 +64,9 @@ public class HashedRBTs <E extends Comparable<? super E>>
                     {
                         index = str.charAt(0) - 71;
 
-                        if(table.get(index).getElement(new Partial(newNode)) != null)
+                        if(table.get(index).contains(new Partial(newNode)) != null)
                         {
-                            table.get(index).getElement(new Partial(newNode)).insertNodeIntoHeap(newNode);
+                            table.get(index).contains(new Partial(newNode)).insertNodeIntoHeap(newNode);
                         }
                         else
                         {
@@ -86,11 +86,13 @@ public class HashedRBTs <E extends Comparable<? super E>>
     {
         try
         {
-            for(int i = 0; i < table.size(); i++)
+            for(RedBlackTree x : table)
             {
-                if(table.get(i).getRoot() != null)
+                if(x.getRoot() != null)
                 {
-                    System.out.println("This tree starts with " + table.get(i).getRoot() + " --> The heap contains:");
+                    String temp = x.getRoot().toString();
+                    String str1 = "This tree starts with " + temp.substring(0, 17) + " --> The heap contains:" + temp.substring(17);
+                    System.out.print(str1);
                 }
                 else
                 {
