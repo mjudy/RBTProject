@@ -21,8 +21,8 @@ public class HashedRBTs <E extends Comparable<? super E>>
 
         for(int i = 0; i < size; i++)
         {
-            RedBlackTree<Partial> tree = new RedBlackTree<>();
-            table.add(i, tree);
+//            RedBlackTree<Partial> tree = new RedBlackTree<>();
+            table.add(i, null);
         }
     }
 
@@ -50,15 +50,16 @@ public class HashedRBTs <E extends Comparable<? super E>>
                     {
                         index = str.charAt(0) - 65;
 
-                        if(table.get(index).contains(new Partial(newNode)))
-                        {
-//                            System.out.println("A");
-                            table.get(index).getElement(new Partial(newNode)).insertNodeIntoHeap(newNode);
-                        }
-                        else if(table.get(index).isEmpty())
+                        if(table.get(index) == null)
                         {
 //                            System.out.println("B");
-                            table.get(index).insert(new Partial(newNode));
+                            RedBlackTree<Partial> tree = new RedBlackTree<>(new Partial(newNode));
+                            table.add(index, tree);
+                        }
+                        else if( table.get(index).contains(new Partial(newNode)))
+                        {
+//                              System.out.println("A");
+                            table.get(index).getElement(new Partial(newNode)).insertNodeIntoHeap(newNode);
                         }
                         else
                         {
@@ -69,7 +70,7 @@ public class HashedRBTs <E extends Comparable<? super E>>
                     {
                         index = str.charAt(0) - 71;
 
-                        if(table.get(index).contains(new Partial(newNode)))
+                        if(!table.get(index).isEmpty() && table.get(index).contains(new Partial(newNode)))
                         {
 //                            System.out.println("C");
                             table.get(index).getElement(new Partial(newNode)).insertNodeIntoHeap(newNode);
@@ -77,6 +78,10 @@ public class HashedRBTs <E extends Comparable<? super E>>
                         else if(table.get(index).isEmpty())
                         {
 //                            System.out.println("D");
+                            table.get(index).insert(new Partial(newNode));
+                        }
+                        else
+                        {
                             table.get(index).insert(new Partial(newNode));
                         }
                     }
@@ -91,7 +96,11 @@ public class HashedRBTs <E extends Comparable<? super E>>
 
     public void printHashCountResults()
     {
-
+//        for(RedBlackTree<Partial> x : table)
+//        {
+//            System.out.println("This tree starts with: " + x.getRoot() + " --> The heap contains: ");
+//            x.getRoot().printImmediateOptions();
+//        }
     }
 
     public RedBlackTree retrieveHashedRBTat(int index)

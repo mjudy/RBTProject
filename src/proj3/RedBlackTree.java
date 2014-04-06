@@ -9,28 +9,125 @@ public class RedBlackTree<E extends Comparable<? super E>>
     final int BLACK = 1;
     final int RED = 0;
     private RedBlackNode<E> nullNode = new RedBlackNode<>();
-    private RedBlackNode<E> root = nullNode;
+    private RedBlackNode<E> root = new RedBlackNode<>(null);
+    private RedBlackNode<E> current;
+    private RedBlackNode<E> parent;
+    private RedBlackNode<E> grand;
+    private RedBlackNode<E> great;
 
-    public RedBlackTree()
+    public RedBlackTree( E element )
     {
-        root.left = null;
-        root.right = null;
-        root.parent = null;
+        root = new RedBlackNode<>( element );
+        root.left = root.right = nullNode;
+    }
+
+    public void insert( E item )
+    {
+        current = parent = grand = root;
+        nullNode.element = item;
+
+        while(current.element != null && current.element.compareTo( item ) != 0 )
+        {
+            great = grand; grand = parent; parent = current;
+            current = item.compareTo( current.element ) < 0 ? current.left : current.right;
+
+            if(current.left != null && current.right != null)
+            {
+                if( current.left.color == RED && current.right.color == RED )
+                    handleReorient( item );
+            }
+        }
+
+        if( current != nullNode )
+            return;
+        current = new RedBlackNode<>( item, nullNode, nullNode );
+
+        if( item.compareTo( parent.element ) < 0 )
+            parent.left = current;
+        else
+            parent.right = current;
+        handleReorient( item );
+    }
+
+    private void handleReorient( E item )
+    {
+        current.color = RED;
+        current.left.color = BLACK;
+        current.right.color = BLACK;
+
+        if( parent.color == RED )   // Have to rotate
+        {
+            grand.color = RED;
+            if( ( item.compareTo( grand.element ) < 0 ) != ( item.compareTo( parent.element ) < 0 ) )
+                parent = rotate( item, grand );  // Start dbl rotate
+            current = rotate( item, great );
+            current.color = BLACK;
+        }
+        root.right.color = BLACK; // Make root black
+    }
+
+    private RedBlackNode rotate( Comparable item, RedBlackNode parent )
+    {
+        if( item.compareTo( parent.element ) < 0 )
+            return parent.left = item.compareTo( parent.left.element ) < 0 ?
+                    rotateWithLeftChild( parent.left )  :  // LL
+                    rotateWithRightChild( parent.left ) ;  // LR
+        else
+            return parent.right = item.compareTo( parent.right.element ) < 0 ?
+                    rotateWithLeftChild( parent.right ) :  // RL
+                    rotateWithRightChild( parent.right );  // RR
+    }
+
+    private RedBlackNode<E> rotateWithLeftChild( RedBlackNode<E> k2 )
+    {
+        RedBlackNode<E> k1 = k2.left;
+        k2.left = k1.right;
+        k1.right = k2;
+        return k1;
+    }
+
+    private RedBlackNode<E> rotateWithRightChild( RedBlackNode<E> k1 )
+    {
+        RedBlackNode<E> k2 = k1.right;
+        k1.right = k2.left;
+        k2.left = k1;
+        return k2;
+    }
+
+    private class RedBlackNode<E extends Comparable<? super E>>
+    {
+        E element;
+        RedBlackNode<E> left;
+        RedBlackNode<E> right;
+        private int color;
+        
+        RedBlackNode()
+        {
+            this (null, null, null);
+        }
+        
+        RedBlackNode( E theElement )
+        {
+            this( theElement, null, null );
+        }
+
+        RedBlackNode( E theElement, RedBlackNode<E> lt, RedBlackNode<E> rt )
+        {
+            element = theElement;
+            left = lt;
+            right = rt;
+            color = BLACK;
+        }
     }
 
     public boolean isEmpty()
     {
-        return root == nullNode;
-    }
-
-    public boolean isNull(RedBlackNode n)
-    {
-        return n == nullNode;
+        return root.right == nullNode;
     }
 
     public boolean contains(Partial x)
     {
-        return contains(x, root);
+        return root != nullNode && contains(x, root);
     }
 
     private boolean contains(Partial x, RedBlackNode n)
@@ -60,7 +157,6 @@ public class RedBlackTree<E extends Comparable<? super E>>
             getElement(x, n.left);
             if (x.compareTo(n.element) == 0)
             {
-//                System.out.println(n.element);
                 return (E)n.element;
             }
             getElement(x, n.right);
@@ -68,11 +164,24 @@ public class RedBlackTree<E extends Comparable<? super E>>
         return null;
     }
 
+    public E getRoot()
+    {
+        if (!isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return root.element;
+        }
+
+    }
+
     public void printRoot()
     {
         if(!isEmpty())
         {
-            System.out.println(root.element.toString());
+            System.out.println(root.element);
         }
         else
         {
@@ -92,248 +201,6 @@ public class RedBlackTree<E extends Comparable<? super E>>
             printTree(x.left);
             System.out.println(x.element);
             printTree(x.right);
-        }
-    }
-
-    public void insert(E element)
-    {
-        insert(new RedBlackNode<>(element));
-    }
-
-    private void insert(RedBlackNode<E> node)
-    {
-        RedBlackNode<E> previous = nullNode;
-        RedBlackNode<E> current = root;
-
-        while (!isNull(current))
-        {
-            previous = current;
-            if (node.element.compareTo(current.element) < 0)
-            {
-                current.numLeft++;
-                current = current.left;
-            }
-            else
-            {
-                current.numRight++;
-                current = current.right;
-            }
-        }
-
-        node.parent = previous;
-
-        if(isNull(previous))
-        {
-            root = node;
-        }
-        else if(node.element.compareTo(previous.element) < 0)
-        {
-            previous.left = node;
-        }
-        else
-        {
-            previous.right = node;
-        }
-
-        node.left = nullNode;
-        node.right = nullNode;
-        node.color = RED;
-
-        insertFix(node);
-    }
-
-    private void insertFix(RedBlackNode<E> node)
-    {
-        RedBlackNode<E> y;
-
-        while(node.parent.color == RED)
-        {
-            if(node.parent == node.parent.parent.left)
-            {
-                y = node.parent.parent.right;
-
-                if (y.color == RED)
-                {
-                    node.parent.color = BLACK;
-                    y.color = BLACK;
-                    node.parent.parent.color = RED;
-                    node = node.parent.parent;
-                }
-                else if(node == node.parent.right)
-                {
-                    node = node.parent;
-                    rotateLeft(node);
-                }
-                else
-                {
-                    node.parent.color = BLACK;
-                    node.parent.parent.color = RED;
-                    rotateRight(node.parent.parent);
-                }
-            }
-            else
-            {
-                y = node.parent.parent.left;
-                if(y.color == RED)
-                {
-                    node.parent.color = BLACK;
-                    y.color = BLACK;
-                    node.parent.parent.color = RED;
-                    node = node.parent.parent;
-                }
-                else if(node == node.parent.left)
-                {
-                    node = node.parent;
-                    rotateRight(node);
-                }
-                else
-                {
-                    node.parent.color = BLACK;
-                    node.parent.parent.color = RED;
-                    rotateLeft(node.parent.parent);
-                }
-            }
-        }
-
-        root.color = BLACK;
-    }
-
-    private void rotateLeft(RedBlackNode<E> x)
-    {
-        rotateLeftFix(x);
-
-        RedBlackNode<E> y;
-        y = x.right;
-        x.right = y.left;
-
-        if (!isNull(y.left))
-        {
-            y.left.parent = x;
-        }
-
-        y.parent = x.parent;
-
-        if (isNull(x.parent))
-        {
-            root = y;
-        }
-        else if(x.parent.left == x)
-        {
-            x.parent.left = y;
-        }
-        else
-        {
-            x.parent.right = y;
-        }
-
-        x.left = x;
-        x.parent = y;
-    }
-
-    private void rotateRight(RedBlackNode<E> y)
-    {
-        rotateRightFix(y);
-
-        RedBlackNode<E> x = y.left;
-        y.left = x.right;
-
-        if(!isNull(x.right))
-        {
-            x.right.parent = y;
-        }
-        x.parent = y.parent;
-
-        if(isNull(y.parent))
-        {
-            root = x;
-        }
-        else if(y.parent.right == y)
-        {
-            y.parent.right = x;
-        }
-        else
-        {
-            y.parent.left = x;
-        }
-
-        x.right = y;
-        y.parent = x;
-    }
-
-    private void rotateLeftFix(RedBlackNode x)
-    {
-        if (isNull(x.left) && isNull(x.right.left))
-        {
-            x.numLeft = 0;
-            x.numRight = 0;
-            x.right.numLeft = 1;
-        }
-        else if(isNull(x.left) && !isNull(x.right.left))
-        {
-            x.numLeft = 0;
-            x.numRight = 1 + x.right.left.numLeft + x.right.left.numRight;
-            x.right.numLeft = 2 + x.right.left.numLeft + x.right.left.numRight;
-        }
-        else if (!isNull(x.left) && isNull(x.right.left))
-        {
-            x.numRight = 0;
-            x.right.numLeft = 2 + x.left.numLeft + x.left.numRight;
-
-        }
-        else
-        {
-            x.numRight = 1 + x.right.left.numLeft + x.right.left.numRight;
-            x.right.numLeft = 3 + x.left.numLeft + x.left.numRight + x.right.left.numLeft + x.right.left.numRight;
-        }
-    }
-
-    private void rotateRightFix(RedBlackNode y)
-    {
-        if (isNull(y.right) && isNull(y.left.right)){
-            y.numRight = 0;
-            y.numLeft = 0;
-            y.left.numRight = 1;
-        }
-        else if (isNull(y.right) && !isNull(y.left.right)){
-            y.numRight = 0;
-            y.numLeft = 1 + y.left.right.numRight + y.left.right.numLeft;
-            y.left.numRight = 2 + y.left.right.numRight + y.left.right.numLeft;
-        }
-        else if (!isNull(y.right) && isNull(y.left.right)){
-            y.numLeft = 0;
-            y.left.numRight = 2 + y.right.numRight +y.right.numLeft;
-
-        }
-        else{
-            y.numLeft = 1 + y.left.right.numRight + y.left.right.numLeft;
-            y.left.numRight = 3 + y.right.numRight + y.right.numLeft + y.left.right.numRight + y.left.right.numLeft;
-        }
-    }
-
-    private class RedBlackNode<E extends Comparable<? super E>>
-    {
-        E element;
-
-        RedBlackNode<E> parent;
-        RedBlackNode<E> left;
-        RedBlackNode<E> right;
-
-        int numLeft = 0, numRight = 0, color;
-
-        RedBlackNode()
-        {
-            color = BLACK;
-            numLeft = 0;
-            numRight = 0;
-            parent = null;
-            left = null;
-            right = null;
-        }
-
-        RedBlackNode(E element)
-        {
-            this();
-            this.element = element;
         }
     }
 }
