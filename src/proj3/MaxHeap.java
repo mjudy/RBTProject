@@ -3,7 +3,7 @@ package proj3;
 import java.util.Arrays;
 
 /**
- * @author theghv
+ * @author Mark Judy <mjudy1@umbc.edu>
  * @version 1.0
  *  Date: 4/1/14
  *  Time: 1:51 AM

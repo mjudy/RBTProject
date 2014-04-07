@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * @author theghv
+ * @author Mark Judy <mjudy1@umbc.edu>
  * @version 1.0
  *          Date: 4/1/14
  *          Time: 1:49 AM
@@ -15,6 +15,12 @@ public class HashedRBTs <E extends Comparable<? super E>>
 {
     private ArrayList<RedBlackTree<Partial>> table;
 
+    /**
+     * Creates a table of ArrayLists containing RedBlackTrees.
+     * Initializes the header node of the RedBlackTree to a minimum value to build the tree.
+     *
+     * @param size size of the table
+     */
     public HashedRBTs(int size)
     {
         table = new ArrayList<>(size);
@@ -27,6 +33,12 @@ public class HashedRBTs <E extends Comparable<? super E>>
         }
     }
 
+    /**
+     * Reads a text input file to populate the table of RedBlackTrees.
+     * The trees are ordered alphabetically with uppercase preceding lowercase.
+     *
+     * @param filename the name of the file to read
+     */
     public void fileReader(String filename)
     {
         File file = new File(filename);
@@ -82,6 +94,9 @@ public class HashedRBTs <E extends Comparable<? super E>>
         }
     }
 
+    /**
+     * Prints results for debugging.
+     */
     public void printHashCountResults()
     {
         try
@@ -107,6 +122,12 @@ public class HashedRBTs <E extends Comparable<? super E>>
         }
     }
 
+    /**
+     * Returns the RedBlackTree at a given index in the table.
+     *
+     * @param index the index of the RedBlackTree to return.
+     * @return a RedBlackTree from the table.
+     */
     public RedBlackTree retrieveHashedRBTat(int index)
     {
         return table.get(index);
