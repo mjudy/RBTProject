@@ -18,50 +18,59 @@ public class RedBlackTree<E extends Comparable<? super E>>
     private RedBlackNode<E> g2Parent;
 
     /**
-     * Constructs a RedBlackTree with a header node.
-     * Accepts a minimum value element to store as the header node of the tree.
-     * The header's right node points to the root of the tree.
+     * Constructs a RedBlackTree with a header node. Accepts a minimum value element to store as the header node of the
+     * tree. The header's right node points to the root of the tree.
      *
-     * @param element
+     * @param minElement minimum value of key data type to generate the head pointer node of the tree.
      */
-    public RedBlackTree( E minElement )
+    public RedBlackTree(E minElement)
     {
-        root = new RedBlackNode<>( minElement );
+        root = new RedBlackNode<>(minElement);
         root.left = root.right = nullNode;
-    }
+    }//end RedBlackTree(minElement)
 
     /**
      * Inserts an element as a new RedBlackNode into the tree.
      *
      * @param item the element to be inserted into the tree.
      */
-    public void insert( E item )
+    public void insert(E item)
     {
         current = parent = gParent = root;
         nullNode.element = item;
 
-        while(current.element != null && current.element.compareTo( item ) != 0 )
+        while(current.element != null && current.element.compareTo(item) != 0)
         {
             g2Parent = gParent; gParent = parent; parent = current;
-            current = item.compareTo( current.element ) < 0 ? current.left : current.right;
+            current = item.compareTo(current.element) < 0 ? current.left : current.right;
 
             if(current.left != null && current.right != null)
             {
-                if( current.left.color == RED && current.right.color == RED )
-                    handleReorient( item );
-            }
-        }
+                if(current.left.color == RED && current.right.color == RED)
+                {
+                    handleReorient(item);
+                }//end if
+            }//end if
+        }//end while
 
-        if( current != nullNode )
+        if(current != nullNode)
+        {
             return;
-        current = new RedBlackNode<>( item, nullNode, nullNode );
+        }//end if
 
-        if( item.compareTo( parent.element ) < 0 )
+        current = new RedBlackNode<>(item, nullNode, nullNode);
+
+        if( item.compareTo(parent.element) < 0 )
+        {
             parent.left = current;
+        }//end if
         else
+        {
             parent.right = current;
-        handleReorient( item );
-    }
+        }//end else
+
+        handleReorient(item);
+    }//end insert(element)
 
     /**
      * Reorients the tree to maintain the color properties of a RedBlackTree. Calls rotation methods to maintain balance
@@ -69,22 +78,25 @@ public class RedBlackTree<E extends Comparable<? super E>>
      *
      * @param item item to reorient the tree around.
      */
-    private void handleReorient( E item )
+    private void handleReorient(E item)
     {
         current.color = RED;
         current.left.color = BLACK;
         current.right.color = BLACK;
 
-        if( parent.color == RED )   // Have to rotate
+        if(parent.color == RED)   // Have to rotate
         {
             gParent.color = RED;
-            if( ( item.compareTo( gParent.element ) < 0 ) != ( item.compareTo( parent.element ) < 0 ) )
-                parent = rotate( item, gParent );  // Start dbl rotate
-            current = rotate( item, g2Parent );
+            if((item.compareTo(gParent.element) < 0 ) != (item.compareTo(parent.element) < 0 ))
+            {
+                parent = rotate(item, gParent);  // Do double rotation
+            }//end if
+            current = rotate(item, g2Parent);
             current.color = BLACK;
-        }
+        }//end if
+
         root.right.color = BLACK; // Make root black
-    }
+    }//end handleReorient(item)
 
     /**
      * Determines the necessary rotations to apply to the RedBlackTree to maintain balance property.
@@ -93,45 +105,45 @@ public class RedBlackTree<E extends Comparable<? super E>>
      * @param parent node at which to perform rotation
      * @return the new node after rotation
      */
-    private RedBlackNode rotate( Comparable item, RedBlackNode parent )
+    private RedBlackNode rotate(Comparable item, RedBlackNode parent)
     {
-        if( item.compareTo( parent.element ) < 0 )
-            return parent.left = item.compareTo( parent.left.element ) < 0 ?
-                    rotateWithLeftChild( parent.left )  :  // LL
-                    rotateWithRightChild( parent.left ) ;  // LR
+        if(item.compareTo(parent.element) < 0)
+            return parent.left = item.compareTo(parent.left.element) < 0 ?
+                    rotateWithLeftChild(parent.left)  :  // Left-Left rotation
+                    rotateWithRightChild(parent.left) ;  // Left-Right rotation
         else
-            return parent.right = item.compareTo( parent.right.element ) < 0 ?
-                    rotateWithLeftChild( parent.right ) :  // RL
-                    rotateWithRightChild( parent.right );  // RR
-    }
+            return parent.right = item.compareTo(parent.right.element) < 0 ?
+                    rotateWithLeftChild(parent.right) :  // Right-Left rotation
+                    rotateWithRightChild(parent.right);  // Right-Right rotation
+    }//end rotate(item, parent)
 
     /**
      * Rotates the tree with given left child of a node to maintain the balance property.
      *
-     * @param k2 the left child of a parent node.
+     * @param node1 the left child of a parent node.
      * @return the new node at the given position.
      */
-    private RedBlackNode<E> rotateWithLeftChild( RedBlackNode<E> k2 )
+    private RedBlackNode<E> rotateWithLeftChild(RedBlackNode<E> node1)
     {
-        RedBlackNode<E> k1 = k2.left;
-        k2.left = k1.right;
-        k1.right = k2;
-        return k1;
-    }
+        RedBlackNode<E> node2 = node1.left;
+        node1.left = node2.right;
+        node2.right = node1;
+        return node2;
+    }//end rotateWithLeftChild(node1)
 
     /**
      * Rotates the tree with the given right child of a node to maintain the balance property.
      *
-     * @param k1 the right child of a parent node.
+     * @param node1 the right child of a parent node.
      * @return the new node at the given position.
      */
-    private RedBlackNode<E> rotateWithRightChild( RedBlackNode<E> k1 )
+    private RedBlackNode<E> rotateWithRightChild(RedBlackNode<E> node1)
     {
-        RedBlackNode<E> k2 = k1.right;
-        k1.right = k2.left;
-        k2.left = k1;
-        return k2;
-    }
+        RedBlackNode<E> node2 = node1.right;
+        node1.right = node2.left;
+        node2.left = node1;
+        return node2;
+    }//end rotateWithRightChild
 
     /**
      * Checks if the tree is empty.
@@ -141,54 +153,54 @@ public class RedBlackTree<E extends Comparable<? super E>>
     public boolean isEmpty()
     {
         return root.right == null;
-    }
+    }//end isEmpty()
 
     /**
      * Checks if the tree contains a given element.
      *
-     * @param x the element to search for
+     * @param item the element to search for
      * @return the element found
      */
-    public E contains(Partial x)
+    public boolean contains(E item)
     {
-        return getElement(x);
-    }
+        return getElement(item) != null;
+    }//end contains(item)
 
     /**
      * Retrieves an element if it is contained in the tree.
      *
-     * @param x the element to search for
+     * @param item the element to search for
      * @return the element found
      */
-    public E retrieveIfItContains(Partial x)
+    public E retrieveIfItContains(E item)
     {
-        return getElement(x);
-    }
+        return getElement(item);
+    }//end retrieveIfItContains(item)
 
     /**
      * Searches the tree for a given element.
      *
-     * @param x the element to search the tree for.
+     * @param item the element to search the tree for.
      * @return the found element.
      */
-    private E getElement(Partial x)
+    private E getElement(E item)
     {
-
-        nullNode.element = (E)x;
+        nullNode.element = item;
         current = root.right;
 
-        for( ; ; )
+        while(current.element != null)
         {
-            if( x.compareTo( current.element ) < 0 )
+            if(item.compareTo(current.element) < 0)
                 current = current.left;
-            else if( x.compareTo( current.element ) > 0 )
+            else if(item.compareTo(current.element) > 0)
                 current = current.right;
-            else if( current != nullNode )
+            else if(current != nullNode)
                 return current.element;
             else
                 return null;
-        }
-    }
+        }//end while
+        return null;
+    }//end getElement(item)
 
     /**
      * Retrieves the current root of the tree.
@@ -200,13 +212,12 @@ public class RedBlackTree<E extends Comparable<? super E>>
         if (isEmpty())
         {
             return null;
-        }
+        }//end if
         else
         {
             return root.right.element;
-        }
-
-    }
+        }//end else
+    }//end getRoot()
 
     /**
      * Prints the current root of the tree. If the tree is empty, prints "Empty Tree".
@@ -215,36 +226,40 @@ public class RedBlackTree<E extends Comparable<? super E>>
     {
         if(!isEmpty())
         {
-            System.out.println(root.right.element);
-        }
+            String outStr = root.right.element.toString();
+            outStr = "This tree starts with " + outStr.substring(0, 17) + " --> The heap contains:" + outStr.substring(17);
+            System.out.print(outStr);
+        }//end if
         else
         {
             System.out.println("Empty Tree");
-        }
-    }
+        }//end else
+    }//end printRoot()
 
     /**
-     * Prints the tree using an inorder traversal.
+     * Prints the tree using an in-order traversal.
      */
     public void printTree()
     {
         printTree(root.right);
-    }
+    }//end printTree()
 
     /**
-     * Prints the tree using an inorder traversal starting from a given node.
+     * Prints the tree using an in-order traversal starting from a given node.
      *
-     * @param x the node to print the tree from.
+     * @param node the node to print the tree from.
      */
-    private void printTree(RedBlackNode x)
+    private void printTree(RedBlackNode node)
     {
-        if(x != nullNode)
+        if(node != nullNode)
         {
-            printTree(x.left);
-            System.out.println(x.getElement().toString());
-            printTree(x.right);
-        }
-    }
+            printTree(node.left);
+            String outStr = node.element.toString();
+            outStr = "This tree starts with " + outStr.substring(0, 17) + " --> The heap contains:" + outStr.substring(17);
+            System.out.println(outStr);
+            printTree(node.right);
+        }//end if
+    }//end printTree(node)
 
     /**
      * Helper class that defines the attributes of a RedBlackNode for the RedBlackTree.
@@ -264,17 +279,17 @@ public class RedBlackTree<E extends Comparable<? super E>>
         RedBlackNode()
         {
             this (null, null, null);
-        }
+        }//end RedBlackNode()
 
         /**
          * Constructs a RedBlackNode containing a specified element with null children.
          *
-         * @param theElement the element for the RedBlackNode to contain
+         * @param element the element for the RedBlackNode to contain
          */
-        RedBlackNode( E theElement )
+        RedBlackNode(E element)
         {
-            this( theElement, null, null );
-        }
+            this(element, null, null);
+        }//end RedBlackNode(element)
 
         /**
          * Constructs a RedBlackNode containing the given element with the specified children.
@@ -283,22 +298,12 @@ public class RedBlackTree<E extends Comparable<? super E>>
          * @param left the left child of the new RedBlackNode
          * @param right the right child of the new RedBlackNode
          */
-        RedBlackNode( E element, RedBlackNode<E> left, RedBlackNode<E> right )
+        RedBlackNode(E element, RedBlackNode<E> left, RedBlackNode<E> right)
         {
             this.element = element;
             this.left = left;
             this.right = right;
             color = BLACK;
-        }
-
-        /**
-         * Returns the element contained in this RedBlackNode
-         *
-         * @return the element contained in the RedBlackNode
-         */
-        E getElement()
-        {
-            return element;
-        }
-    }
-}
+        }//end RedBlackNode(element, left, right)
+    }//end RedBlackNode
+}//end RedBlackTree

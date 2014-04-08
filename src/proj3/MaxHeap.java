@@ -10,119 +10,91 @@ import java.util.Arrays;
  */
 public class MaxHeap <E extends Comparable<? super E>>
 {
-    private static int DEFAULT_CAPACITY = 100;
+    private static int DEFAULT_CAPACITY = 15;
     private int currentSize;
     private E[] array;
 
+    /**
+     * Creates a MaxHeap with a default capacity.
+     */
     public MaxHeap()
     {
         this (DEFAULT_CAPACITY);
-    }
+    }//end MaxHeap()
 
+    /**
+     * Creates a MaxHeap with the specified capacity.
+     *
+     * @param capacity the size of the heap to be created
+     */
     public MaxHeap(int capacity)
     {
         currentSize = 0;
-        array = (E[]) new Comparable[capacity];
-    }
+        array = (E[]) new Comparable[capacity + 1];
+    }//end MaxHeap(capacity)
 
-    public void insert(E x)
+    /**
+     * Inserts a new item into the heap. If the heap is full, re-sizes the heap to accommodate more items.
+     *
+     * @param element the item to be inserted into the heap.
+     */
+    public void insert(E element)
     {
-//        System.out.println("Sup");
         int index;
-        if (isFull())
-        {
-            array = this.resize();
-        }
 
-        if(isEmpty())
-        {
-            index = currentSize;
-            array[index] = x;
-            currentSize++;
-        }
-        else
-        {
-            index = currentSize;
-            for (; index > 0 && x.compareTo(array[index/2]) > 0; index /= 2)
-            {
-                array[index] = array[index/2];
-            }
-            array[index] = x;
-            currentSize++;
-        }
-    }
+        if(currentSize == array.length - 1)
+            array = resize();
 
-    public Comparable findMax()
-    {
-        if(isEmpty())
-        {
-            return null;
-        }
-        return array[0];
-    }
+        index = ++currentSize;
+        for(array[0] = element; element.compareTo(array[index / 2] ) > 0; index /= 2)
+            array[index] = array[index / 2];
+        array[index] = element;
+    }//end insert(element)
 
+    /**
+     * Checks to see if the heap is empty.
+     *
+     * @return returns true if the heap is empty.
+     */
     public boolean isEmpty()
     {
-        return array[0] == null;
-    }
+        return currentSize == 0;
+    }//end isEmpty()
 
-    public boolean isFull()
-    {
-        return currentSize == array.length;
-    }
-
-    private void buildHeap()
-    {
-        for (int i = currentSize / 2; i > 0; i--)
-        {
-            percolateDown(i);
-        }
-    }
-
+    /**
+     * Prints the initial nodes of the heap to show its general contents.
+     */
     public void printImmediateOptions()
     {
-        for(int i = 0; i < 3; i++)
+        for(int i = 1; i <= 3; i++)
         {
             System.out.println(array[i]);
-        }
-    }
+        }//end for(i)
+    }//end printImmediateOptions()
 
-    private void percolateDown(int index)
-    {
-        int child;
-        E temp = array[index];
-        for ( ; index * 2 <= currentSize; index = child)
-        {
-            child = index * 2;
-            if (child != currentSize && array[child+1].compareTo(array[child]) < 0)
-            {
-                child++;
-            }
-            if (array[child].compareTo(temp) < 0)
-            {
-                array[index] = array [child];
-            }
-            else
-            {
-                break;
-            }
-        }
-        array[index] = temp;
-    }
-
+    /**
+     * Re-sizes the heap to twice its original size.
+     *
+     * @return the re-sized heap
+     */
     private E[] resize()
     {
-        return Arrays.copyOf(array, array.length * 2);
-    }
+        return Arrays.copyOf(array, array.length * 2 + 1);
+    }//end resize()
 
+    /**
+     * Creates a string containing the contents of the heap, with each node on a new line.
+     *
+     * @return the string containing the contents of the heap.
+     */
     @Override
     public String toString()
     {
         String str = "\n";
-        for (int i = 0; i < currentSize; i++)
+        for (int i = 1; i < currentSize + 1; i++)
         {
-            str += "[" + (i + 1) + "]" + array[i].toString() + "\n";
-        }
+            str += "[" + (i) + "] " + array[i].toString() + "\n";
+        }//end for(i)
         return str;
-    }
-}
+    }//end toString()
+}//end MaxHeap
